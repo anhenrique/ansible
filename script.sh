@@ -3,6 +3,12 @@
 echo '================================Atualizando Kernel====================================='
 sudo apt update
 sudo apt install -y --install-recommends linux-generic-hwe-20.04
+sudo apt install -y network-manager
+sudo apt install -y netplan
+sudo apt install -y mtr
+sudo apt install -y nmtui
+sudo apt install -y nload
+sudo apt install -y netstat
 
 echo '================================Desinstalar Kaspersky ====================================='
 sudo systemctl  stop kesl klnagent64
