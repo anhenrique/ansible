@@ -4,7 +4,7 @@
   become: yes
   vars:
     repo_git: "https://github.com/anhenrique/ansible.git"
-    pasta_destino: "/tmp/"
+    pasta_destino: "/tmp/ansible"
     nome_arquivo_deb: "klnagent64_13.2.2-1263_amd64.deb"
     script_sh: "script.sh"
 
