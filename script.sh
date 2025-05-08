@@ -30,14 +30,14 @@ sudo rm -rf /opt/kaspersky /var/opt/kaspersky /etc/opt/kaspersky /var/log/kasper
 
 echo '===============================Instalando Kaspersky===================================='
 
-DEB_FILE="/root/klnagent64_15.1.0-20748_amd64.deb"
+DEB_FILE="/tmp/klnagent64_15.1.0-20748_amd64.deb"
 DOWNLOAD_URL="https://downloads.hsprevent.com.br/klnagent64_15.1.0-20748_amd64.deb"
 
 # Baixar apenas se o arquivo não existir
 if [ -f "$DEB_FILE" ]; then
   echo "Arquivo .deb já existe: $DEB_FILE. Pulando o download."
 else
-  echo "Baixando arquivo .deb..."
+  echo "Baixando arquivo .deb para /tmp..."
   wget -O "$DEB_FILE" "$DOWNLOAD_URL"
 fi
 
