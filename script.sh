@@ -34,9 +34,9 @@ fi
 
 tmux new-session -d -s $SESSION_NAME # kaspersky
 
-tmux send-keys -t $SESSION_NAME "chmod +x /root/klnagent64_13.2.2-1263_amd64.deb" Enter 
+tmux send-keys -t $SESSION_NAME "chmod +x /root/klnagent64_15.1.0-20748_amd64.deb" Enter 
 sleep 3
-tmux send-keys "dpkg -i /root/klnagent64_13.2.2-1263_amd64.deb" Enter
+tmux send-keys "dpkg -i /root/klnagent64_15.1.0-20748_amd64.deb" Enter
 sleep 60
 tmux send-keys -t $SESSION_NAME "cd /opt/kaspersky/klnagent64/lib/bin/setup" Enter
 sleep 2
