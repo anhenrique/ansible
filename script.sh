@@ -12,17 +12,21 @@ sudo apt install -y netstat
 
 echo '================================Desinstalar Kaspersky ====================================='
 sudo systemctl stop kesl klnagent64
-
 sudo apt remove -y klnagent64 kesl
-
-sudo rm -rf /opt/kaspersky
-sudo rm -rf /var/opt/kaspersky
-sudo rm -rf /etc/opt/kaspersky
-sudo rm -rf /var/log/kaspersky
+sudo rm -rf /opt/kaspersky /var/opt/kaspersky /etc/opt/kaspersky /var/log/kaspersky
 
 echo '===============================Instalando Kaspersky===================================='
 
-wget https://downloads.hsprevent.com.br/klnagent64_15.1.0-20748_amd64.deb
+DEB_FILE="/root/klnagent64_15.1.0-20748_amd64.deb"
+DOWNLOAD_URL="https://downloads.hsprevent.com.br/klnagent64_15.1.0-20748_amd64.deb"
+
+# Baixar apenas se o arquivo não existir
+if [ -f "$DEB_FILE" ]; then
+  echo "Arquivo .deb já existe: $DEB_FILE. Pulando o download."
+else
+  echo "Baixando arquivo .deb..."
+  wget -O "$DEB_FILE" "$DOWNLOAD_URL"
+fi
 
 SESSION_NAME="kaspersky"
 
@@ -32,12 +36,12 @@ if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
   tmux kill-session -t "$SESSION_NAME"
 fi
 
-tmux new-session -d -s $SESSION_NAME # kaspersky
+tmux new-session -d -s $SESSION_NAME
 
-tmux send-keys -t $SESSION_NAME "chmod +x /root/klnagent64_15.1.0-20748_amd64.deb" Enter 
+tmux send-keys -t $SESSION_NAME "chmod +x $DEB_FILE" Enter 
 sleep 3
-tmux send-keys "dpkg -i /root/klnagent64_15.1.0-20748_amd64.deb" Enter
-sleep 60
+tmux send-keys "dpkg -i $DEB_FILE" Enter
+sleep 10
 tmux send-keys -t $SESSION_NAME "cd /opt/kaspersky/klnagent64/lib/bin/setup" Enter
 sleep 2
 tmux send-keys "./postinstall.pl" Enter
@@ -75,6 +79,12 @@ sleep 2
 sudo systemctl restart klnagent64
 sleep 2
 sudo systemctl status klnagent64 --no-pager
+
+# Limpa o arquivo .deb após instalação
+echo "Removendo arquivo .deb: $DEB_FILE"
+rm -f "$DEB_FILE"
+
 tmux kill-session -t kaspersky
+
 echo '===============================Kaspersky finalizado===================================='
 sleep 3
