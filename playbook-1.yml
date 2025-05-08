@@ -4,8 +4,7 @@
   become: yes
   vars:
     repo_git: "https://github.com/anhenrique/ansible.git"
-    pasta_destino: "/tmp/ansible"
-    nome_arquivo_deb: "klnagent64_13.2.2-1263_amd64.deb"
+    pasta_destino: "/root/ansible"
     script_sh: "script.sh"
 
   tasks:
@@ -22,11 +21,6 @@
         dest: "{{ pasta_destino }}"
         version: HEAD
         force: yes
-
-    - name: Instalar pacote .deb do repositório
-      apt:
-        deb: "{{ pasta_destino }}/{{ nome_arquivo_deb }}"
-        state: present
 
     - name: Executar script .sh do repositório
       command: "bash {{ pasta_destino }}/{{ script_sh }}"
