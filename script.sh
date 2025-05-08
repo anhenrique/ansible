@@ -21,13 +21,16 @@ sudo rm -rf /etc/opt/kaspersky
 sudo rm -rf /var/log/kaspersky
 
 echo '===============================Instalando Kaspersky===================================='
+
+wget https://downloads.hsprevent.com.br/klnagent64_15.1.0-20748_amd64.deb
+
 SESSION_NAME="kaspersky"
 
 tmux new-session -d -s $SESSION_NAME # kaspersky
 
-tmux send-keys -t $SESSION_NAME "chmod +x /tmp/ansible/klnagent64_13.2.2-1263_amd64.deb" Enter 
+tmux send-keys -t $SESSION_NAME "chmod +x klnagent64_13.2.2-1263_amd64.deb" Enter 
 sleep 3
-tmux send-keys "dpkg -i /tmp/ansible/klnagent64_13.2.2-1263_amd64.deb" Enter
+tmux send-keys "dpkg -i klnagent64_13.2.2-1263_amd64.deb" Enter
 sleep 10
 tmux send-keys -t $SESSION_NAME "cd /opt/kaspersky/klnagent64/lib/bin/setup" Enter
 sleep 2
