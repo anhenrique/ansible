@@ -1,26 +1,18 @@
 ---
-- name: Clonar repositório, instalar .deb e executar script
+- name: Atualizar Kernel e reinstalar Kaspersky
   hosts: all
   become: yes
+
   vars:
-    repo_git: "https://github.com/anhenrique/ansible.git"
-    pasta_destino: "/root/ansible"
-    script_sh: "script.sh"
+    script_local: "./script.sh"
+    script_remoto: "/tmp/script.sh"
 
   tasks:
+    - name: Copiar script para o servidor remoto
+      copy:
+        src: "{{ script_local }}"
+        dest: "{{ script_remoto }}"
+        mode: '0755'
 
-    - name: Garantir que git está instalado
-      apt:
-        name: git
-        state: present
-        update_cache: yes
-
-    - name: Clonar repositório Git
-      git:
-        repo: "{{ repo_git }}"
-        dest: "{{ pasta_destino }}"
-        version: HEAD
-        force: yes
-
-    - name: Executar script .sh do repositório
-      command: "bash {{ pasta_destino }}/{{ script_sh }}"
+    - name: Executar script no servidor remoto
+      command: bash {{ script_remoto }}
