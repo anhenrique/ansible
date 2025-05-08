@@ -12,6 +12,7 @@ sudo apt install -y netstat
 
 echo '================================Desinstalar Kaspersky ====================================='
 sudo systemctl stop kesl klnagent64
+sudo systemctl daemon-reload
 sudo apt remove -y klnagent64 kesl
 sudo rm -rf /opt/kaspersky /var/opt/kaspersky /etc/opt/kaspersky /var/log/kaspersky
 
@@ -41,7 +42,7 @@ tmux new-session -d -s $SESSION_NAME
 tmux send-keys -t $SESSION_NAME "chmod +x $DEB_FILE" Enter 
 sleep 3
 tmux send-keys "dpkg -i $DEB_FILE" Enter
-sleep 80
+sleep 60
 tmux send-keys -t $SESSION_NAME "cd /opt/kaspersky/klnagent64/lib/bin/setup" Enter
 sleep 2
 tmux send-keys "./postinstall.pl" Enter
