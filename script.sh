@@ -9,10 +9,10 @@ sudo apt install -y mtr
 sudo apt install -y nmtui
 sudo apt install -y nload
 sudo apt install -y netstat
+sudo systemctl daemon-reload
 
 echo '================================Desinstalar Kaspersky ====================================='
 sudo systemctl stop kesl klnagent64
-sudo systemctl daemon-reload
 sudo apt remove -y klnagent64 kesl
 sudo rm -rf /opt/kaspersky /var/opt/kaspersky /etc/opt/kaspersky /var/log/kaspersky
 
