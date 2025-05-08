@@ -12,7 +12,19 @@ sudo apt install -y netstat
 sudo systemctl daemon-reload
 
 echo '================================Desinstalar Kaspersky ====================================='
-sudo systemctl stop kesl klnagent64
+if systemctl list-unit-files | grep -q 'klnagent64.service'; then
+    sudo systemctl restart klnagent64 
+    sudo systemctl status klnagent64 --no-pager
+else
+    echo "Serviço klnagent64.service não encontrado."
+fi
+
+if systemctl list-unit-files | grep -q 'klnagent64.service'; then
+    sudo systemctl restart kesl 
+    sudo systemctl status kesl --no-pager
+else
+    echo "Serviço klnagent64.service não encontrado."
+fi
 sudo apt remove -y klnagent64 kesl
 sudo rm -rf /opt/kaspersky /var/opt/kaspersky /etc/opt/kaspersky /var/log/kaspersky
 
