@@ -2,6 +2,35 @@
 
 set -uo pipefail  # remove 'set -e' para permitir que o script continue em outros erros
 
+echo "=== Parando serviços do Kaspersky ==="
+systemctl stop klnagent64 2>/dev/null
+systemctl stop kesl 2>/dev/null
+
+echo "=== Removendo pacotes ==="
+apt purge -y klnagent klnagent64 kesl
+sudo dpkg --remove --force-remove-reinstreq klnagent64
+
+
+echo "=== Limpando dependências não utilizadas ==="
+apt autoremove -y --purge
+
+echo "=== Removendo diretórios residuais ==="
+rm -rf /opt/kaspersky
+rm -rf /var/opt/kaspersky
+rm -rf /etc/opt/kaspersky
+rm -rf /var/log/kaspersky
+
+echo "=== Verificando possíveis binários remanescentes ==="
+rm -f /usr/bin/kesl-control
+rm -f /usr/bin/klnagent
+
+echo "=== Verificação final ==="
+#find / -iname "*kaspersky*" -o -iname "*klnagent*" -o -iname "*kesl*" 2>/dev/null
+
+echo "✅ Remoção completa finalizada."
+
+
+
 echo '================================Atualizando Kernel====================================='
 sudo apt update
 sudo apt install -y --install-recommends linux-generic-hwe-20.04
@@ -13,43 +42,18 @@ sudo apt install -y nload
 sudo apt install -y net-tools
 sudo systemctl daemon-reload
 
-echo "==================== Parando serviços relacionados ao Kaspersky ===================="
-
-# Tenta parar os serviços se estiverem carregados
-sudo systemctl stop klnagent64 2>/dev/null || echo "Serviço klnagent64 não encontrado ou já parado."
-sudo systemctl stop kesl 2>/dev/null || echo "Serviço kesl não encontrado ou já parado."
-
-echo "==================== Removendo pacotes ===================="
-
-# Remove o pacote via dpkg ou apt
-if dpkg -l | grep -q klnagent64; then
-  sudo apt remove -y klnagent64 || sudo dpkg --purge klnagent64
-else
-  echo "Pacote klnagent64 não está instalado."
-fi
-
-echo "==================== Removendo diretórios residuais ===================="
-
-sudo rm -rf /opt/kaspersky
-sudo rm -rf /var/opt/kaspersky
-sudo rm -rf /etc/opt/kaspersky
-sudo rm -rf /var/log/kaspersky
-
-echo "==================== Remoção completa ===================="
-
-
 
 
 echo "==================== Excluindo .deb anterior ===================="
 
-DEB_FILE="/tmp/klnagent64_13.2.2-1263_amd64.deb"
+DEB_FILE="/tmp/klnagent64_15.1.0-20748_amd64.deb"
 
 sudo rm -rf "$DEB_FILE"
 
 echo '===============================Instalando Kaspersky===================================='
 
 
-DOWNLOAD_URL="https://downloads.hsprevent.com.br/klnagent64_13.2.2-1263_amd64.deb"
+DOWNLOAD_URL="https://downloads.hsprevent.com.br/klnagent64_15.1.0-20748_amd64.deb"
 
 # Baixar apenas se o arquivo não existir
 if [ -f "$DEB_FILE" ]; then
@@ -79,7 +83,7 @@ fi
 tmux new-session -d -s $SESSION_NAME
 
 tmux send-keys -t $SESSION_NAME "cd /opt/kaspersky/klnagent64/lib/bin/setup" Enter
-sleep 2
+sleep 5
 tmux send-keys "./postinstall.pl" Enter
 sleep 2
 tmux send-keys C-c
@@ -111,7 +115,7 @@ sleep 2
 tmux send-keys "cd /opt/kaspersky/klnagent64/bin" Enter
 sleep 2
 tmux send-keys "./klmover -address 172.40.0.3" Enter
-sleep 2
+sleep 90
 sudo systemctl restart klnagent64
 sleep 2
 sudo systemctl status klnagent64 --no-pager
