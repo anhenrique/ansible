@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -uo pipefail  # remove 'set -e' para permitir que o script continue em outros erros
+
 echo '================================Atualizando Kernel====================================='
 sudo apt update
 sudo apt install -y --install-recommends linux-generic-hwe-20.04
@@ -8,9 +10,8 @@ sudo apt install -y netplan
 sudo apt install -y mtr
 sudo apt install -y nmtui
 sudo apt install -y nload
-sudo apt install -y netstat
+sudo apt install -y net-tools
 sudo systemctl daemon-reload
-
 
 echo "==================== Parando serviços relacionados ao Kaspersky ===================="
 
@@ -37,10 +38,18 @@ sudo rm -rf /var/log/kaspersky
 echo "==================== Remoção completa ===================="
 
 
+
+
+echo "==================== Excluindo .deb anterior ===================="
+
+DEB_FILE="/tmp/klnagent64_13.2.2-1263_amd64.deb"
+
+sudo rm -rf "$DEB_FILE"
+
 echo '===============================Instalando Kaspersky===================================='
 
-DEB_FILE="/tmp/klnagent64_15.1.0-20748_amd64.deb"
-DOWNLOAD_URL="https://downloads.hsprevent.com.br/klnagent64_15.1.0-20748_amd64.deb"
+
+DOWNLOAD_URL="https://downloads.hsprevent.com.br/klnagent64_13.2.2-1263_amd64.deb"
 
 # Baixar apenas se o arquivo não existir
 if [ -f "$DEB_FILE" ]; then
@@ -50,6 +59,15 @@ else
   wget -O "$DEB_FILE" "$DOWNLOAD_URL"
 fi
 
+# Instala o pacote fora do tmux
+chmod +x "$DEB_FILE"
+echo "Instalando pacote $DEB_FILE..."
+if ! sudo dpkg -i "$DEB_FILE"; then
+  echo "Erro ao instalar o pacote .deb. Encerrando script."
+  exit 1
+fi
+
+# Executa o restante da configuração em tmux
 SESSION_NAME="kaspersky"
 
 # Encerra a sessão tmux existente, se houver
@@ -60,10 +78,6 @@ fi
 
 tmux new-session -d -s $SESSION_NAME
 
-tmux send-keys -t $SESSION_NAME "chmod +x $DEB_FILE" Enter 
-sleep 3
-tmux send-keys "dpkg -i $DEB_FILE" Enter
-sleep 90
 tmux send-keys -t $SESSION_NAME "cd /opt/kaspersky/klnagent64/lib/bin/setup" Enter
 sleep 2
 tmux send-keys "./postinstall.pl" Enter
