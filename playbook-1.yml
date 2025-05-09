@@ -14,5 +14,11 @@
         dest: "{{ script_remoto }}"
         mode: '0755'
 
-    - name: Executar script no servidor remoto
-      command: bash {{ script_remoto }}
+    - name: Executar script no servidor remoto e capturar saída
+      shell: bash {{ script_remoto }}
+      register: script_output
+      ignore_errors: yes  # opcional, se você quiser que erros no script não parem o playbook
+
+    - name: Exibir saída do script na interface AWX
+      debug:
+        var: script_output.stdout_lines
