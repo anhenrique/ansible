@@ -1,34 +1,33 @@
 ---
-- name: Clonar repo Git e subir cAdvisor com Docker Compose
+- name: Clonar repositório e executar Docker Compose
   hosts: all
-  become: true
+  become: yes
 
   vars:
-    repo_url: "https://github.com/anhenrique/ansible.git"  
-    compose_dir: "{{ repo_dest }}/infra/cadvisor"
+    repo_url: "https://seu-repositorio-git.git"
+    repo_dest: "{{ ansible_env.HOME }}/infra/cadvisor"
+    compose_file: "{{ repo_dest }}/docker-compose.yml"
 
   tasks:
+
     - name: Garantir que o diretório {{ repo_dest }} existe
       file:
         path: "{{ repo_dest }}"
         state: directory
         mode: '0755'
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
 
-    - name: Clonar repositório Git (ou atualizar se já existir)
+    - name: Clonar o repositório Git com docker-compose
       git:
         repo: "{{ repo_url }}"
         dest: "{{ repo_dest }}"
-        version: main         # ajuste para a branch correta
-        force: yes
+        version: main
         update: yes
+        force: yes
 
-    - name: Subir containers com Docker Compose
-      shell: docker compose up -d
+    - name: Subir serviços com Docker Compose
+      command: docker compose -f "{{ compose_file }}" up -d
       args:
-        chdir: "{{ compose_dir }}"
-
+        chdir: "{{ repo_dest }}"
 
     - name: Exibir saída do script na interface AWX
       debug:
