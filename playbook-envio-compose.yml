@@ -1,0 +1,35 @@
+---
+- name: Enviar e executar docker-compose para cAdvisor
+  hosts: all
+  become: true
+
+  vars:
+    compose_src: ./docker-compose.yml   # Caminho local
+    remote_dir: "{{ ansible_env.HOME }}/infra/cadvisor"
+    remote_compose_file: "{{ remote_dir }}/docker-compose.yml"
+
+  tasks:
+    - name: Garantir que o diretório remoto existe
+      file:
+        path: "{{ remote_dir }}"
+        state: directory
+        mode: '0755'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Copiar docker-compose.yml para o servidor remoto
+      copy:
+        src: "{{ compose_src }}"
+        dest: "{{ remote_compose_file }}"
+        mode: '0644'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Subir o container com docker-compose
+      shell: docker compose up -d
+      args:
+        chdir: "{{ remote_dir }}"
+
+    - name: Exibir saída do script na interface AWX
+      debug:
+        var: script_output.stdout_lines
