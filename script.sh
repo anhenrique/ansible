@@ -50,6 +50,22 @@ DEB_FILE="/tmp/klnagent64_15.1.0-20748_amd64.deb"
 
 sudo rm -rf "$DEB_FILE"
 
+
+echo "================== Verificando dependências =================="
+
+# Garante que wget esteja instalado
+if ! command -v wget &>/dev/null; then
+  echo "wget não encontrado. Instalando..."
+  sudo apt install -y wget || { echo "❌ Erro ao instalar wget. Encerrando."; exit 1; }
+fi
+
+# Garante que tmux esteja instalado
+if ! command -v tmux &>/dev/null; then
+  echo "tmux não encontrado. Instalando..."
+  sudo apt install -y tmux || { echo "❌ Erro ao instalar tmux. Encerrando."; exit 1; }
+fi
+
+
 echo '===============================Instalando Kaspersky===================================='
 
 
