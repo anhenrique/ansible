@@ -1,34 +1,35 @@
 ---
-- name: Enviar e executar docker-compose para cAdvisor
+- name: Clonar repo Git e subir cAdvisor com Docker Compose
   hosts: all
   become: true
 
   vars:
-    compose_src: ./docker-compose.yml   # Caminho local
-    remote_dir: "{{ ansible_env.HOME }}/infra/cadvisor"
-    remote_compose_file: "{{ remote_dir }}/docker-compose.yml"
+    repo_url: "https://github.com/anhenrique/ansible.git"  # 🔁 Substitua pela URL real
+    repo_dest: "~/infra"
+    compose_dir: "{{ repo_dest }}/cadvisor"
 
   tasks:
-    - name: Garantir que o diretório remoto existe
+    - name: Garantir que o diretório {{ repo_dest }} existe
       file:
-        path: "{{ remote_dir }}"
+        path: "{{ repo_dest }}"
         state: directory
         mode: '0755'
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
 
-    - name: Copiar docker-compose.yml para o servidor remoto
-      copy:
-        src: "{{ compose_src }}"
-        dest: "{{ remote_compose_file }}"
-        mode: '0644'
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
+    - name: Clonar repositório Git (ou atualizar se já existir)
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ repo_dest }}"
+        version: main         # ajuste para a branch correta
+        force: yes
+        update: yes
 
-    - name: Subir o container com docker-compose
+    - name: Subir containers com Docker Compose
       shell: docker compose up -d
       args:
-        chdir: "{{ remote_dir }}"
+        chdir: "{{ compose_dir }}"
+
 
     - name: Exibir saída do script na interface AWX
       debug:
