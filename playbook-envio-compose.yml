@@ -1,34 +1,34 @@
 ---
-- name: Clonar repositório e executar Docker Compose
+- name: Enviar e executar docker-compose para cAdvisor
   hosts: all
-  become: yes
+  become: true
 
   vars:
-    repo_url: "https://github.com/anhenrique/ansible.git"
-    repo_dest: "{{ ansible_env.HOME }}/infra/cadvisor"
-    compose_file: "{{ repo_dest }}/docker-compose.yml"
+    compose_src: ./docker-compose.yml   # Caminho local
+    remote_dir: "{{ ansible_env.HOME }}/infra/cadvisor"
+    remote_compose_file: "{{ remote_dir }}/docker-compose.yml"
 
   tasks:
-
-    - name: Garantir que o diretório {{ repo_dest }} existe
+    - name: Garantir que o diretório remoto existe
       file:
-        path: "{{ repo_dest }}"
+        path: "{{ remote_dir }}"
         state: directory
         mode: '0755'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
 
-    - name: Clonar o repositório Git com docker-compose
-      git:
-        repo: "{{ repo_url }}"
-        dest: "{{ repo_dest }}"
-        version: main
-        update: yes
-        force: yes
+    - name: Copiar docker-compose.yml para o servidor remoto
+      copy:
+        src: "{{ compose_src }}"
+        dest: "{{ remote_compose_file }}"
+        mode: '0644'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
 
-    - name: Subir serviços com Docker Compose
-      command: docker compose -f "{{ compose_file }}" up -d
+    - name: Subir o container com docker-compose
+      shell: docker compose up -d
       args:
-        chdir: "{{ repo_dest }}"
-
+        chdir: "{{ remote_dir }}"
     - name: Exibir saída do script na interface AWX
       debug:
         var: script_output.stdout_lines
