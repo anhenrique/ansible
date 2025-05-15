@@ -4,7 +4,7 @@
   become: true
 
   vars:
-    repo_url: "https://github.com/anhenrique/ansible.git"  # 🔁 Substitua pela URL real
+    repo_url: "https://github.com/anhenrique/ansible.git"  
     repo_dest: "~/infra"
     compose_dir: "{{ repo_dest }}/cadvisor"
 
