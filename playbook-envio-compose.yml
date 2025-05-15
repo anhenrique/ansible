@@ -5,8 +5,7 @@
 
   vars:
     repo_url: "https://github.com/anhenrique/ansible.git"  
-    repo_dest: "~/infra"
-    compose_dir: "{{ repo_dest }}/cadvisor"
+    compose_dir: "{{ repo_dest }}/infra/cadvisor"
 
   tasks:
     - name: Garantir que o diretório {{ repo_dest }} existe
