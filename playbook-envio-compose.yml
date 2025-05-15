@@ -4,7 +4,7 @@
   become: yes
 
   vars:
-    repo_url: "https://seu-repositorio-git.git"
+    repo_url: "https://github.com/anhenrique/ansible.git"
     repo_dest: "{{ ansible_env.HOME }}/infra/cadvisor"
     compose_file: "{{ repo_dest }}/docker-compose.yml"
 
